@@ -11,6 +11,7 @@ type application struct {
 	config   *config
 }
 
+// newApp creates a new application instance.
 func newApp(c *config) *application {
 	return &application{
 		config:   c,
@@ -18,14 +19,15 @@ func newApp(c *config) *application {
 	}
 }
 
+// run starts the system tray application.
 func (app *application) run() {
 	app.refresh()
 	app.notifier.clear()
 	systray.Run(app.onReady, app.onExit)
 }
 
+// refresh fetches the latest stories from Hacker News API.
 func (app *application) refresh() {
-	// @TODO: Move fetching to separate goroutine?
 	if ids, err := fetchBest(); err == nil {
 		app.notifier.add(storyBest, ids...)
 	}
@@ -37,6 +39,7 @@ func (app *application) refresh() {
 	}
 }
 
+// onReady is called when the system tray application is ready.
 func (app *application) onReady() {
 	toggleMenuItem := func(item *systray.MenuItem) {
 		if item.Checked() {
@@ -96,6 +99,7 @@ func (app *application) onReady() {
 	}()
 }
 
+// onExit is called when the system tray application is exiting.
 func (app *application) onExit() {
 	saveConfig(app.config)
 }

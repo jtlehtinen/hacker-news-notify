@@ -21,6 +21,8 @@ type Story struct {
 	Url         string `json:"url"`
 }
 
+// fetch fetches the given URL and returns the response.
+// The response is expected to be a JSON array of integers.
 func fetch(url string) ([]int32, error) {
 	client := http.Client{
 		Timeout: 2 * time.Second,
@@ -46,18 +48,22 @@ func fetch(url string) ([]int32, error) {
 	return response, nil
 }
 
+// fetchTop fetches the top stories from Hacker News API.
 func fetchTop() ([]int32, error) {
 	return fetch(apiBaseUrl + "topstories.json")
 }
 
+// fetchNew fetches the new stories from Hacker News API.
 func fetchNew() ([]int32, error) {
 	return fetch(apiBaseUrl + "newstories.json")
 }
 
+// fetchBest fetches the best stories from Hacker News API.
 func fetchBest() ([]int32, error) {
 	return fetch(apiBaseUrl + "beststories.json")
 }
 
+// fetchStory fetches a story from Hacker News API.
 func fetchStory(id int32) (*Story, error) {
 	url := fmt.Sprintf("%sitem/%d.json", apiBaseUrl, id)
 

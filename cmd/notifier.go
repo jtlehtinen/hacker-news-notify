@@ -30,6 +30,7 @@ type notifier struct {
 	queue []entry        // Entries waiting to be toasted.
 }
 
+// newNotifier creates a new notifier instance.
 func newNotifier() *notifier {
 	return &notifier{
 		seen:  make(map[entry]void),
@@ -37,6 +38,7 @@ func newNotifier() *notifier {
 	}
 }
 
+// add adds the given story ids to the notifier queue.
 func (n *notifier) add(kind storyKind, ids ...int32) {
 	for _, id := range ids {
 		e := entry{id: id, kind: kind}
@@ -47,6 +49,7 @@ func (n *notifier) add(kind storyKind, ids ...int32) {
 	}
 }
 
+// clear clears the notifier queue.
 func (n *notifier) clear() {
 	n.queue = nil
 }
@@ -57,6 +60,7 @@ var kindToTitle = map[storyKind]string{
 	storyBest: "Best Story",
 }
 
+// notifyOne notifies one story from the notifier queue.
 func (n *notifier) notifyOne(notifyTop, notifyNew, notifyBest bool) {
 	accept := func(kind storyKind) bool {
 		switch kind {
@@ -90,10 +94,12 @@ func (n *notifier) notifyOne(notifyTop, notifyNew, notifyBest bool) {
 	}
 }
 
+// getHackerNewsUrl returns the Hacker News URL for the given story.
 func getHackerNewsUrl(story *Story) string {
 	return fmt.Sprintf("https://news.ycombinator.com/item?id=%d", story.Id)
 }
 
+// showToast shows a toast notification.
 func showToast(title, message, url, urlHackerNews string) error {
 	iconPath, err := filepath.Abs("./assets/hnn.png")
 	if err != nil {
