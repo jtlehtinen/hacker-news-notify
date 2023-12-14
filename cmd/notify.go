@@ -1,16 +1,15 @@
 package main
 
 import (
-	"log"
 	"path/filepath"
 
 	"gopkg.in/toast.v1"
 )
 
-func notify() {
+func notify() error {
 	iconPath, err := filepath.Abs("./assets/hnn.png")
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	notification := toast.Notification{
@@ -24,7 +23,5 @@ func notify() {
 		},
 	}
 
-	if err := notification.Push(); err != nil {
-		log.Fatalln(err)
-	}
+	return notification.Push()
 }
