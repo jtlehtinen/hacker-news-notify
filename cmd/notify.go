@@ -3,7 +3,7 @@ package main
 import (
 	"path/filepath"
 
-	"gopkg.in/toast.v1"
+	"github.com/go-toast/toast"
 )
 
 func notify(title, message, url, urlHackerNews string) error {

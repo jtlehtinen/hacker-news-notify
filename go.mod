@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/getlantern/systray v1.2.2
-	gopkg.in/toast.v1 v1.0.0-20180812000517-0a84660828b2
+	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4
 )
 
 require (
