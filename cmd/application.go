@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/getlantern/systray"
 )
 
 // @TODO: Clean up this mess.
@@ -16,15 +18,21 @@ type NotifyQueueEntry struct {
 }
 
 type application struct {
-	notifyTop   bool
-	notifyBest  bool
-	notifyNew   bool
+	config      *config
 	notifyQueue []*NotifyQueueEntry
 	seen        map[int64]void
 	mu          sync.Mutex // Guards everything
 
 	notifyTicker     *time.Ticker
 	notifyTickerDone chan bool
+}
+
+func newApp(config *config) *application {
+	return &application{
+		config:      config,
+		notifyQueue: make([]*NotifyQueueEntry, 0),
+		seen:        make(map[int64]void),
+	}
 }
 
 func filterNew(ids []int64, seen map[int64]void) []int64 {
@@ -76,36 +84,36 @@ func (app *application) stopNotifyRoutine() {
 func (app *application) getNotifyTop() bool {
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	return app.notifyTop
+	return app.config.NotifyTop
 }
 
 func (app *application) setNotifyTop(value bool) {
 	app.mu.Lock()
-	app.notifyTop = value
+	app.config.NotifyTop = value
 	app.mu.Unlock()
 }
 
 func (app *application) getNotifyBest() bool {
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	return app.notifyBest
+	return app.config.NotifyBest
 }
 
 func (app *application) setNotifyBest(value bool) {
 	app.mu.Lock()
-	app.notifyBest = value
+	app.config.NotifyBest = value
 	app.mu.Unlock()
 }
 
 func (app *application) getNotifyNew() bool {
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	return app.notifyNew
+	return app.config.NotifyNew
 }
 
 func (app *application) setNotifyNew(value bool) {
 	app.mu.Lock()
-	app.notifyNew = value
+	app.config.NotifyNew = value
 	app.mu.Unlock()
 }
 
@@ -135,13 +143,13 @@ func (app *application) refresh() {
 
 	firstRefresh := len(app.seen) == 0
 	if !firstRefresh {
-		if app.notifyTop {
+		if app.config.NotifyTop {
 			app.addToNotifyQueue("Top Story", newTop)
 		}
-		if app.notifyBest {
+		if app.config.NotifyBest {
 			app.addToNotifyQueue("Best Story", newBest)
 		}
-		if app.notifyNew {
+		if app.config.NotifyNew {
 			app.addToNotifyQueue("New Story", newNew)
 		}
 	}
@@ -158,4 +166,28 @@ func (app *application) refresh() {
 	for _, id := range newNew {
 		app.seen[id] = void{}
 	}
+}
+
+func (app *application) run() {
+	refreshTicker := time.NewTicker(3 * time.Minute)
+	refreshTickerDone := make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-refreshTickerDone:
+				return
+			case <-refreshTicker.C:
+				app.refresh()
+			}
+		}
+	}()
+	app.refresh()
+
+	app.startNotifyRoutine()
+	systray.Run(app.onReady, app.onExit)
+	app.stopNotifyRoutine()
+
+	refreshTicker.Stop()
+	refreshTickerDone <- true
 }

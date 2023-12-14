@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/getlantern/systray"
 )
 
@@ -47,30 +45,6 @@ func (app *application) onReady() {
 			}
 		}
 	}()
-}
-
-func (app *application) run() {
-	refreshTicker := time.NewTicker(3 * time.Minute)
-	refreshTickerDone := make(chan bool)
-
-	go func() {
-		for {
-			select {
-			case <-refreshTickerDone:
-				return
-			case <-refreshTicker.C:
-				app.refresh()
-			}
-		}
-	}()
-	app.refresh()
-
-	app.startNotifyRoutine()
-	systray.Run(app.onReady, app.onExit)
-	app.stopNotifyRoutine()
-
-	refreshTicker.Stop()
-	refreshTickerDone <- true
 }
 
 func (app *application) onExit() {
