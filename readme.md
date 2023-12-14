@@ -2,6 +2,8 @@
 
 System tray application for Windows that displays a toast notification when best/new/top story listings change in Hacker News.
 
+![Screenshot](./shot.png)
+
 ## Requirements
 
 - [just](https://github.com/casey/just) is used as a command runner.
