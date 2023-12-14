@@ -14,7 +14,7 @@ type application struct {
 }
 
 func (app *application) getNotifyTop() bool {
-	notify()
+	notify("Title...", "Message...", "https://news.ycombinator.com")
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	return app.notifyTop
