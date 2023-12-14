@@ -5,8 +5,8 @@ default: run
 
 # Compile and run
 run:
-  go run ./cmd
+  @go run ./cmd
 
 # Build release version
 build:
-  go build -ldflags=all='-H=windowsgui' -o hnn.exe ./cmd
+  @go build -ldflags=all='-H=windowsgui' -o hnn.exe ./cmd
