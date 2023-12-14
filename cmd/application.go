@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// @TODO: Clean up this mess.
+
 type void struct{}
 
 type NotifyQueueEntry struct {
@@ -122,6 +124,7 @@ func (app *application) addToNotifyQueue(notifyTitle string, stories []int64) {
 
 func (app *application) refresh() {
 	// @TODO: Separate go routine. Don't block tray app.
+	// @TODO: Process story only once.
 	top, _ := fetchTop()
 	new, _ := fetchNew()
 	best, _ := fetchBest()

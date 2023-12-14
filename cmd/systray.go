@@ -50,7 +50,7 @@ func (app *application) onReady() {
 }
 
 func (app *application) run() {
-	refreshTicker := time.NewTicker(30 * time.Second)
+	refreshTicker := time.NewTicker(3 * time.Minute)
 	refreshTickerDone := make(chan bool)
 
 	go func() {
