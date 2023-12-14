@@ -1,8 +1,6 @@
 package main
 
 func main() {
-	c := loadConfig()
-	app := newApp(c)
+	app := newApp(loadConfig())
 	app.run()
-	saveConfig(app.config)
 }

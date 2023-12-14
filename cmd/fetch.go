@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 const apiBaseUrl = "https://hacker-news.firebaseio.com/v0/"
@@ -21,12 +22,17 @@ type Story struct {
 }
 
 func fetch(url string) ([]int64, error) {
-	res, err := http.Get(url)
+	client := http.Client{
+		Timeout: 2 * time.Second,
+	}
+
+	res, err := client.Get(url)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := io.ReadAll(res.Body)
+	const maxBytesToRead = 10 * 1_024 * 1_024
+	body, err := io.ReadAll(io.LimitReader(res.Body, maxBytesToRead))
 	if err != nil {
 		return nil, err
 	}
@@ -55,12 +61,17 @@ func fetchBest() ([]int64, error) {
 func fetchStory(id int64) (*Story, error) {
 	url := fmt.Sprintf("%sitem/%d.json", apiBaseUrl, id)
 
-	res, err := http.Get(url)
+	client := http.Client{
+		Timeout: 2 * time.Second,
+	}
+
+	res, err := client.Get(url)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := io.ReadAll(res.Body)
+	const maxBytesToRead = 10 * 1_024 * 1_024
+	body, err := io.ReadAll(io.LimitReader(res.Body, maxBytesToRead))
 	if err != nil {
 		return nil, err
 	}
