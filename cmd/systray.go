@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/getlantern/systray"
 )
 
@@ -33,7 +35,7 @@ func (app *application) onReady() {
 				app.setNotifyTop(top.Checked())
 			case <-best.ClickedCh:
 				toggle(best)
-				app.setNotifyNew(best.Checked())
+				app.setNotifyBest(best.Checked())
 			case <-new.ClickedCh:
 				toggle(new)
 				app.setNotifyNew(new.Checked())
@@ -48,7 +50,27 @@ func (app *application) onReady() {
 }
 
 func (app *application) run() {
+	refreshTicker := time.NewTicker(30 * time.Second)
+	refreshTickerDone := make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-refreshTickerDone:
+				return
+			case <-refreshTicker.C:
+				app.refresh()
+			}
+		}
+	}()
+	app.refresh()
+
+	app.startNotifyRoutine()
 	systray.Run(app.onReady, app.onExit)
+	app.stopNotifyRoutine()
+
+	refreshTicker.Stop()
+	refreshTickerDone <- true
 }
 
 func (app *application) onExit() {

@@ -6,7 +6,7 @@ import (
 	"gopkg.in/toast.v1"
 )
 
-func notify(title, message, url string) error {
+func notify(title, message, url, urlHackerNews string) error {
 	iconPath, err := filepath.Abs("./assets/hnn.png")
 	if err != nil {
 		return err
@@ -19,7 +19,9 @@ func notify(title, message, url string) error {
 		Icon:    iconPath,
 		Actions: []toast.Action{
 			{Type: "protocol", Label: "Open", Arguments: url},
+			{Type: "protocol", Label: "Open HN", Arguments: urlHackerNews},
 		},
+		Duration: toast.Long,
 	}
 
 	return notification.Push()

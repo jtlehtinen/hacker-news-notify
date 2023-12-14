@@ -9,7 +9,7 @@ import (
 
 const apiBaseUrl = "https://hacker-news.firebaseio.com/v0/"
 
-type Article struct {
+type Story struct {
 	Id          int    `json:"id"`
 	Score       int    `json:"score"`
 	Time        int    `json:"time"` // Unix time
@@ -52,7 +52,7 @@ func fetchBest() ([]int64, error) {
 	return fetch(apiBaseUrl + "beststories.json")
 }
 
-func fetchStory(id int64) (*Article, error) {
+func fetchStory(id int64) (*Story, error) {
 	url := fmt.Sprintf("%sitem/%d.json", apiBaseUrl, id)
 
 	res, err := http.Get(url)
@@ -65,7 +65,7 @@ func fetchStory(id int64) (*Article, error) {
 		return nil, err
 	}
 
-	response := &Article{}
+	response := &Story{}
 	err = json.Unmarshal(body, response)
 	if err != nil {
 		return nil, err
