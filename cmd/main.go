@@ -14,6 +14,7 @@ type application struct {
 }
 
 func (app *application) getNotifyTop() bool {
+	notify()
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	return app.notifyTop
