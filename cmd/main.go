@@ -1,6 +1,9 @@
 package main
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type application struct {
 	notifyTop  bool
@@ -48,6 +51,10 @@ func (app *application) setNotifyNew(value bool) {
 	app.mu.Lock()
 	app.notifyNew = value
 	app.mu.Unlock()
+}
+
+func (app *application) refresh() {
+	fmt.Println("refresh")
 }
 
 func main() {

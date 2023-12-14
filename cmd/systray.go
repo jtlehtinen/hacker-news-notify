@@ -20,6 +20,7 @@ func (app *application) onReady() {
 	top := systray.AddMenuItemCheckbox("Top", "Top", app.getNotifyTop())
 	best := systray.AddMenuItemCheckbox("Best", "Best", app.getNotifyBest())
 	new := systray.AddMenuItemCheckbox("New", "New", app.getNotifyNew())
+	refresh := systray.AddMenuItem("Refresh", "Download latest from Hacker News API")
 
 	systray.AddSeparator()
 	quit := systray.AddMenuItem("Exit", "Exit")
@@ -36,6 +37,8 @@ func (app *application) onReady() {
 			case <-new.ClickedCh:
 				toggle(new)
 				app.setNotifyNew(new.Checked())
+			case <-refresh.ClickedCh:
+				app.refresh()
 			case <-quit.ClickedCh:
 				systray.Quit()
 				return
