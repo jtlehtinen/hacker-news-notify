@@ -7,7 +7,8 @@ import (
 	"github.com/go-toast/toast"
 )
 
-type storyKind int
+type void struct{}
+type storyKind int32
 
 const (
 	storyNew storyKind = iota
@@ -15,34 +16,39 @@ const (
 	storyBest
 )
 
+// @IMPORTANT: The max id can be fetched from
+// https://hacker-news.firebaseio.com/v0/maxitem.json
+// 32-bit integer more than enough.
 type entry struct {
+	id   int32
 	kind storyKind
-	id   int64
 }
 
 type notifier struct {
-	entries map[int64]entry
-	pending []entry
+	seen  map[entry]void // Entries (id + kind pair) we have received.
+	toast map[int32]void // Story ids for which toast has been shown.
+	queue []entry        // Entries waiting to be toasted.
 }
 
 func newNotifier() *notifier {
 	return &notifier{
-		entries: make(map[int64]entry),
+		seen:  make(map[entry]void),
+		toast: make(map[int32]void),
 	}
 }
 
-func (n *notifier) add(kind storyKind, ids ...int64) {
+func (n *notifier) add(kind storyKind, ids ...int32) {
 	for _, id := range ids {
-		if _, ok := n.entries[id]; !ok {
-			e := entry{kind: kind, id: id}
-			n.entries[id] = e
-			n.pending = append(n.pending, e)
+		e := entry{id: id, kind: kind}
+		if _, ok := n.seen[e]; !ok {
+			n.seen[e] = void{}
+			n.queue = append(n.queue, e)
 		}
 	}
 }
 
-func (n *notifier) clearPending() {
-	n.pending = nil
+func (n *notifier) clear() {
+	n.queue = nil
 }
 
 var kindToTitle = map[storyKind]string{
@@ -64,11 +70,16 @@ func (n *notifier) notifyOne(notifyTop, notifyNew, notifyBest bool) {
 		return false
 	}
 
-	for len(n.pending) > 0 {
-		e := n.pending[0]
-		n.pending = n.pending[1:]
+	for len(n.queue) > 0 {
+		e := n.queue[0]
+		n.queue = n.queue[1:]
+
+		if _, ok := n.toast[e.id]; ok {
+			continue
+		}
 
 		if accept(e.kind) {
+			n.toast[e.id] = void{}
 			go func() {
 				if story, err := fetchStory(e.id); err == nil {
 					showToast(kindToTitle[e.kind], story.Title, story.Url, getHackerNewsUrl(story))

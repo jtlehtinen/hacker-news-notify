@@ -20,7 +20,7 @@ func newApp(c *config) *application {
 
 func (app *application) run() {
 	app.refresh()
-	app.notifier.clearPending()
+	app.notifier.clear()
 	systray.Run(app.onReady, app.onExit)
 }
 

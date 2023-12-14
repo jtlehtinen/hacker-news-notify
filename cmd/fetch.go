@@ -11,17 +11,17 @@ import (
 const apiBaseUrl = "https://hacker-news.firebaseio.com/v0/"
 
 type Story struct {
-	Id          int    `json:"id"`
-	Score       int    `json:"score"`
-	Time        int    `json:"time"` // Unix time
-	Descendants int    `json:"descendants"`
+	Id          int32  `json:"id"`
+	Score       int32  `json:"score"`
+	Time        int32  `json:"time"` // Unix time; Y2K38
+	Descendants int32  `json:"descendants"`
 	By          string `json:"by"`
 	Title       string `json:"title"`
 	Type        string `json:"type"`
 	Url         string `json:"url"`
 }
 
-func fetch(url string) ([]int64, error) {
+func fetch(url string) ([]int32, error) {
 	client := http.Client{
 		Timeout: 2 * time.Second,
 	}
@@ -37,7 +37,7 @@ func fetch(url string) ([]int64, error) {
 		return nil, err
 	}
 
-	var response []int64
+	var response []int32
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return nil, err
@@ -46,19 +46,19 @@ func fetch(url string) ([]int64, error) {
 	return response, nil
 }
 
-func fetchTop() ([]int64, error) {
+func fetchTop() ([]int32, error) {
 	return fetch(apiBaseUrl + "topstories.json")
 }
 
-func fetchNew() ([]int64, error) {
+func fetchNew() ([]int32, error) {
 	return fetch(apiBaseUrl + "newstories.json")
 }
 
-func fetchBest() ([]int64, error) {
+func fetchBest() ([]int32, error) {
 	return fetch(apiBaseUrl + "beststories.json")
 }
 
-func fetchStory(id int64) (*Story, error) {
+func fetchStory(id int32) (*Story, error) {
 	url := fmt.Sprintf("%sitem/%d.json", apiBaseUrl, id)
 
 	client := http.Client{

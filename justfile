@@ -9,4 +9,5 @@ run:
 
 # Build release executable for Windows
 build:
+  rsrc.exe -ico assets/hnn.ico -arch amd64 -o ./cmd/win.syso
   @go build -ldflags=all='-H=windowsgui' -o hnn.exe ./cmd
