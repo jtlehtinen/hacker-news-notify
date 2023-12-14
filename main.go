@@ -1,15 +1,11 @@
 package main
 
-import "fmt"
+type application struct {
+	top  []int64
+	best []int64
+	new  []int64
+}
 
 func main() {
-	top, _ := fetchTop()
-	//fmt.Println(top)
-
-	id := top[0]
-	story := fetchStory(id)
-	fmt.Println(story)
-
-	//fetchNews()
-	//fetchBest()
+	run()
 }
