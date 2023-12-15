@@ -6,9 +6,6 @@ import (
 	"path/filepath"
 )
 
-// @NOTE: Doesn't really matter much if loading/reading
-// the config fails.
-
 type config struct {
 	NotifyTop  bool `json:"notifyTop"`
 	NotifyBest bool `json:"notifyBest"`
